@@ -5,12 +5,6 @@
 !/README.md
 
 !/scripts/
-/scripts/*
-!/scripts/setup.sh
-!/scripts/start-server.sh
-!/scripts/download-model.sh
-!/scripts/verify.sh
-!/scripts/pi.sh
 
 !/pi/
 /pi/*
