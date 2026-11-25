@@ -24,14 +24,35 @@ for f in json.load(sys.stdin):
 [ -n "${FILE:-}" ] || { echo "Could not find $QUANT in $REPO"; exit 1; }
 echo "File: $FILE ($((SIZE/1024/1024)) MB)"
 
+mkdir -p models
 OUT="models/$(basename "$FILE")"
-if [ -f "$OUT" ] && [ "$(stat -f%z "$OUT")" = "$SIZE" ]; then
-  echo "Already downloaded: $OUT (size matches; skipping download)"
+PART="$OUT.part"
+fsize() { stat -f%z "$1" 2>/dev/null || stat -c%s "$1"; }
+
+if [ -f "$OUT" ] && [ -z "${FORCE:-}" ]; then
+  if [ "$(fsize "$OUT")" = "$SIZE" ]; then
+    echo "Already downloaded: $OUT (size matches Hugging Face; skipping)"
+  else
+    # Downloads only ever land in $OUT after passing the checksum, so a full-named file is
+    # complete. A different size means Unsloth has re-uploaded the quant since then.
+    echo "Keeping existing $OUT: it's a complete, earlier upload ($(fsize "$OUT") bytes; Hugging Face now has $SIZE)."
+    echo "  To replace it with the current upload: FORCE=1 QUANT=$QUANT ./scripts/download-model.sh"
+  fi
 else
-  curl -L -C - --fail --progress-bar -o "$OUT" "https://huggingface.co/$REPO/resolve/main/$FILE"
+  # Resume only a partial download of this exact upload (same target size), never a different file.
+  if [ -f "$PART" ] && { [ ! -f "$PART.size" ] || [ "$(cat "$PART.size")" != "$SIZE" ] || [ "$(fsize "$PART")" -gt "$SIZE" ]; }; then
+    echo "Discarding a partial download of a different upload"; rm -f "$PART"
+  fi
+  echo "$SIZE" > "$PART.size"
+  curl -L -C - --fail --progress-bar -o "$PART" "https://huggingface.co/$REPO/resolve/main/$FILE"
   echo "Verifying SHA-256..."
-  got=$(shasum -a 256 "$OUT" | cut -d' ' -f1)
-  if [ "$got" = "$SHA" ]; then echo "OK: $OUT matches Hugging Face checksum"; else echo "MISMATCH: got $got expected $SHA"; exit 1; fi
+  got=$(shasum -a 256 "$PART" | cut -d' ' -f1)
+  if [ "$got" != "$SHA" ]; then
+    rm -f "$PART" "$PART.size"
+    echo "MISMATCH: got $got expected $SHA. Deleted the download; re-run to try again."; exit 1
+  fi
+  mv -f "$PART" "$OUT"; rm -f "$PART.size"
+  echo "OK: $OUT matches Hugging Face checksum"
 fi
 # models/inkling.gguf is what the single-Mac start-server.sh loads; NO_LINK=1 leaves it alone
 [ -n "${NO_LINK:-}" ] || ln -sf "$(basename "$OUT")" models/inkling.gguf
