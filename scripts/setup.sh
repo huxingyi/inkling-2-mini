@@ -10,10 +10,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 
-TAG="b12588-mix-c0c3de8"
+TAG="b12676-mix-c32dcc8"
 ASSET="llama-${TAG}-bin-macos-arm64.tar.gz"
 URL="https://github.com/unslothai/llama.cpp/releases/download/${TAG}/${ASSET}"
-SHA256="229def18e27ed740ec4f3a6508f084b25630e08d8a87ada40b00622fc496ceb8"
+SHA256="ce970fa9a38e5288fde83aeb07c5e977f1b631537d520139fd0e51169e39a73f"
 PI_VERSION="1.6.0"; PKG="@earendil-works/pi-coding-agent"; NODE_MIN="22.19.0"
 PI_PREFIX="$ROOT/pi/node"
 
@@ -27,17 +27,22 @@ step "1. This Mac"
 ok "Apple Silicon, $(( $(sysctl -n hw.memsize) / 1024 / 1024 / 1024 )) GiB, macOS $(sw_vers -productVersion)"
 
 step "2. llama.cpp (Unsloth build $TAG)"
-if [ -x llama.cpp/llama-server ] && [ "$(cat llama.cpp/.tag 2>/dev/null || echo "$TAG")" = "$TAG" ]; then
+CUR_TAG="$(cat llama.cpp/.tag 2>/dev/null || echo unknown)"   # no marker = installed by hand, version unknown
+if [ -x llama.cpp/llama-server ] && [ "$CUR_TAG" = "$TAG" ]; then
   ok "Already installed"
 else
   mkdir -p vendor
   curl -fL --progress-bar -o "vendor/$ASSET" "$URL" || die "Download failed."
   [ "$(shasum -a 256 "vendor/$ASSET" | cut -d' ' -f1)" = "$SHA256" ] || die "Checksum mismatch; not installing."
+  rm -rf "vendor/llama-$TAG"          # leftover from an interrupted run
   tar xzf "vendor/$ASSET" -C vendor
-  [ -e llama.cpp ] && mv llama.cpp "llama.cpp.old.$(date +%s)"
+  if [ -e llama.cpp ]; then
+    OLD="llama.cpp.old.$CUR_TAG.$(date +%Y%m%d-%H%M%S)"
+    mv llama.cpp "$OLD"; echo "  Previous build ($CUR_TAG) moved to $OLD; delete it once the new one works."
+  fi
   mv "vendor/llama-$TAG" llama.cpp
   echo "$TAG" > llama.cpp/.tag
-  ok "Installed, checksum verified"
+  ok "Installed $TAG, checksum verified. Restart the server if it's running."
 fi
 xattr -dr com.apple.quarantine llama.cpp 2>/dev/null || true
 

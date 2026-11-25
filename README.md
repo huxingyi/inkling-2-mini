@@ -35,7 +35,7 @@ Needs: Apple Silicon Mac, ~25 GB free disk, Node.js 22.19+ (nvm is used if prese
 
 | Path | Purpose |
 |---|---|
-| `scripts/setup.sh` | Rebuilds llama.cpp (Unsloth `b12588-mix-c0c3de8`), the model and Pi 1.6.0 |
+| `scripts/setup.sh` | Rebuilds llama.cpp (Unsloth `b12676-mix-c32dcc8`), the model and Pi 1.6.0 |
 | `scripts/start-server.sh` | `llama-server` on 127.0.0.1:8080, tuned for 16 GB |
 | `scripts/download-model.sh` | Downloads a GGUF from `unsloth/Inkling-2-Mini-GGUF`, verifies SHA-256 |
 | `scripts/verify.sh` | Smoke test |
