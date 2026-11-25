@@ -1,0 +1,27 @@
+# Allow-list: ignore everything, then un-ignore what the repo tracks.
+# Big binaries (model, llama.cpp, Pi's node_modules) are re-downloaded by scripts/setup.sh.
+/*
+!/.gitignore
+!/README.md
+
+!/scripts/
+/scripts/*
+!/scripts/setup.sh
+!/scripts/start-server.sh
+!/scripts/download-model.sh
+!/scripts/verify.sh
+!/scripts/pi.sh
+
+!/pi/
+/pi/*
+!/pi/agent/
+/pi/agent/*
+!/pi/agent/models.json
+!/pi/agent/settings.json
+!/pi/agent/APPEND_SYSTEM.md
+!/pi/agent/extensions/
+
+!/docs/
+
+.DS_Store
+__pycache__/

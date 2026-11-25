@@ -1,0 +1,12 @@
+{
+  "defaultProvider": "inkling",
+  "defaultModel": "inkling-2-mini",
+  "defaultThinkingLevel": "low",
+  "enableInstallTelemetry": false,
+  "lastChangelogVersion": "1.6.0",
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 5461,
+    "keepRecentTokens": 5734
+  }
+}
