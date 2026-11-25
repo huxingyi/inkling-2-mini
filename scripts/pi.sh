@@ -68,7 +68,7 @@ if m.get("contextWindow") != n:
 # Pi's compaction defaults (reserve 16384, keep 20000) assume a big window; scale them to this one
 spath = path.replace("models.json", "settings.json")
 st = json.load(open(spath))
-want = {"enabled": True, "reserveTokens": max(4096, n // 3), "keepRecentTokens": max(3072, int(n * 0.35))}
+want = {"enabled": st.get("compaction", {}).get("enabled", True), "reserveTokens": max(4096, n // 3), "keepRecentTokens": max(3072, int(n * 0.35))}
 if st.get("compaction") != want:
     st["compaction"] = want
     json.dump(st, open(spath, "w"), indent=2)
