@@ -34,8 +34,13 @@ installed="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$PI_PREFIX/node_module
 say "  installed: ${installed:-not installed} (pinned: $PI_VERSION)"
 latest_pi="$(npm view "$PKG" version 2>/dev/null)"
 if [ -n "$latest_pi" ]; then
-  [ "$installed" = "$latest_pi" ] && same "Pi $latest_pi (latest)" \
-    || new "Pi $latest_pi (installed: ${installed:-none}) — bump PI_VERSION in setup.sh"
+  if [ "$latest_pi" != "$PI_VERSION" ]; then
+    new "Pi $latest_pi is out (pinned: $PI_VERSION) — bump PI_VERSION in setup.sh"
+  elif [ "$installed" != "$PI_VERSION" ]; then
+    new "Pi $PI_VERSION is pinned but ${installed:-nothing} is installed — run ./scripts/setup.sh"
+  else
+    same "Pi $latest_pi (latest)"
+  fi
 else
   warn "npm registry"
 fi

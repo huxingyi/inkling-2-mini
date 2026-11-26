@@ -14,7 +14,7 @@
 set -euo pipefail
 CALLER_DIR="$(pwd)"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PI_VERSION="1.6.0"
+PI_VERSION="$(sed -n 's/^PI_VERSION="\([^"]*\)".*/\1/p' "$ROOT/scripts/setup.sh")"   # pinned in setup.sh only
 PKG="@earendil-works/pi-coding-agent"
 NODE_MIN="22.19.0"
 PI_PREFIX="$ROOT/pi/node"
