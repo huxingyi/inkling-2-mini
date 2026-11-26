@@ -10,11 +10,11 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 
-TAG="b12676-mix-c32dcc8"
+TAG="b12722-mix-f1c70ea"
 ASSET="llama-${TAG}-bin-macos-arm64.tar.gz"
 URL="https://github.com/unslothai/llama.cpp/releases/download/${TAG}/${ASSET}"
-SHA256="ce970fa9a38e5288fde83aeb07c5e977f1b631537d520139fd0e51169e39a73f"
-PI_VERSION="1.6.0"; PKG="@earendil-works/pi-coding-agent"; NODE_MIN="22.19.0"
+SHA256="42225541baae9633ab14baa88618e265088102a8490e02091bdbd6db553abb2e"
+PI_VERSION="1.6.1"; PKG="@earendil-works/pi-coding-agent"; NODE_MIN="22.19.0"
 PI_PREFIX="$ROOT/pi/node"
 
 ok()   { printf '  \033[32m✓\033[0m %s\n' "$*"; }
