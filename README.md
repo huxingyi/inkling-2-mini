@@ -30,7 +30,7 @@ Needs: Apple Silicon Mac, ~25 GB free disk, Node.js 22.19+ (nvm is used if prese
 | `WORKDIR=~/code/app ./scripts/pi.sh` | Run Pi on another folder |
 | `SANDBOX=1 ./scripts/pi.sh` | macOS sandbox: shell commands can't write outside the work folder |
 | `PI_MAX_TOOL_CHARS=4000 ./scripts/pi.sh` | Tighter cap on each tool result |
-| `TRIM_START=0.8 TRIM_TARGET=0.3 ./scripts/pi.sh` | When context trimming starts and how far it cuts (default 0.75 → 0.30); `TRIM_OFF=1` disables it |
+| `TRIM_START=0.8 TRIM_TARGET=0.3 ./scripts/pi.sh` | When context trimming starts and how far it cuts (default 0.70 → 0.30); `TRIM_OFF=1` disables it |
 
 ## Context size
 
@@ -64,7 +64,8 @@ that ran. Use `context-trim.ts` (below) to make 16K last, rather than a bigger w
 | `pi/agent/APPEND_SYSTEM.md` | Rules that keep reads, searches and command output small |
 | `pi/agent/extensions/workdir-guard.ts` | Blocks write/edit outside the work folder |
 | `pi/agent/extensions/output-cap.ts` | Cuts any tool result over 6,000 characters |
-| `pi/agent/extensions/context-trim.ts` | Past 75% of the window, replaces old tool output, long tool arguments and old thinking with one-line notes (no model call) |
+| `pi/agent/extensions/output-room.ts` | Lets replies use the room really left in the window; Pi otherwise holds back 4,096 tokens, cutting replies short past ~12K |
+| `pi/agent/extensions/context-trim.ts` | Past 70% of the window, replaces old tool output, long tool arguments and old thinking with one-line notes (no model call) |
 | `docs/inside-a-local-agent.html` | Explainer: tokens, chat template, decoding, tool calls, agent loop |
 
 Not tracked: `models/`, `llama.cpp/`, `vendor/`, `pi/node/`, and Pi's `auth.json`, `sessions/` and caches.

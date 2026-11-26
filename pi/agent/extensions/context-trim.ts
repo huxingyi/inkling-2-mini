@@ -2,16 +2,16 @@
 // No model call is involved: old tool results, long tool-call arguments (heredocs, file contents)
 // and old thinking are replaced in code with one-line notes. The saved session keeps everything.
 //
-// It waits until the context passes TRIM_START (75% of the window) and then cuts, oldest first,
+// It waits until the context passes TRIM_START (70% of the window, so a full 4096-token reply still fits) and then cuts, oldest first,
 // down to TRIM_TARGET (30%). The server then has to re-read the conversation once from the first
 // changed message (~4-5K tokens, ~50-60 s at 88 tok/s); the system prompt and your first message stay cached.
 // Cuts are permanent for the session, so the turns between trims stay fast.
 // The last TRIM_KEEP_TURNS (3) model turns, your messages and the model's replies are never cut.
 //
-// Env: TRIM_START=0.75 TRIM_TARGET=0.30 TRIM_KEEP_TURNS=3 TRIM_OFF=1 (disable)
+// Env: TRIM_START=0.70 TRIM_TARGET=0.30 TRIM_KEEP_TURNS=3 TRIM_OFF=1 (disable)
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-const START = Number(process.env.TRIM_START || 0.75);
+const START = Number(process.env.TRIM_START || 0.7);
 const TARGET = Number(process.env.TRIM_TARGET || 0.3);
 const KEEP_TURNS = Number(process.env.TRIM_KEEP_TURNS || 3);
 const CHARS_PER_TOKEN = 3.5; // rough; only used to estimate how much a cut saves
