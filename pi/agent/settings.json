@@ -3,10 +3,10 @@
   "defaultModel": "inkling-2-mini",
   "defaultThinkingLevel": "low",
   "enableInstallTelemetry": false,
-  "lastChangelogVersion": "1.6.1",
+  "lastChangelogVersion": "1.7.0",
   "compaction": {
     "enabled": false,
-    "reserveTokens": 5461,
-    "keepRecentTokens": 5734
+    "reserveTokens": 8192,
+    "keepRecentTokens": 8601
   }
 }
