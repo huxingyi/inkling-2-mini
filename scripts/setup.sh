@@ -10,10 +10,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 
-TAG="b12722-mix-f1c70ea"
+TAG="b12776-mix-ef2df21"
 ASSET="llama-${TAG}-bin-macos-arm64.tar.gz"
 URL="https://github.com/unslothai/llama.cpp/releases/download/${TAG}/${ASSET}"
-SHA256="42225541baae9633ab14baa88618e265088102a8490e02091bdbd6db553abb2e"
+SHA256="e64e3dc64b31ea5cbf8f9bd965b8074371f5fe9a884e40d0b9f94618e253518d"
 PI_VERSION="1.6.1"; PKG="@earendil-works/pi-coding-agent"; NODE_MIN="22.19.0"
 PI_PREFIX="$ROOT/pi/node"
 
