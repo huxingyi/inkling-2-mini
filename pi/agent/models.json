@@ -19,7 +19,7 @@
       "models": [
         {
           "id": "inkling-2-mini",
-          "name": "Inkling 2 Mini (local llama.cpp, UD-Q2_K_XL)",
+          "name": "Inkling 2 Mini (local llama.cpp, GSQ-RCO-Q2_K_XL)",
           "reasoning": true,
           "thinkingLevelMap": {
             "off": "none",
@@ -33,7 +33,7 @@
           "input": [
             "text"
           ],
-          "contextWindow": 16384,
+          "contextWindow": 24576,
           "maxTokens": 4096,
           "cost": {
             "input": 0,

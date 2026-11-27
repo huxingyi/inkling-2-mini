@@ -65,7 +65,7 @@ m = d["providers"]["inkling"]["models"][0]
 if m.get("contextWindow") != n:
     m["contextWindow"] = n
     json.dump(d, open(path, "w"), indent=2)
-# Pi's compaction defaults (reserve 16384, keep 20000) assume a big window; scale them to this one
+# Pi's compaction defaults assume a big window; scale them to this one
 spath = path.replace("models.json", "settings.json")
 st = json.load(open(spath))
 want = {"enabled": st.get("compaction", {}).get("enabled", True), "reserveTokens": max(4096, n // 3), "keepRecentTokens": max(3072, int(n * 0.35))}

@@ -1,9 +1,9 @@
 #!/bin/bash
-# Downloads Unsloth's Inkling 2 Mini GGUF and verifies its SHA-256 against Hugging Face.
+# Downloads ISTA-DASLab Inkling 2 Mini GGUF and verifies its SHA-256 against Hugging Face.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-QUANT="${QUANT:-UD-Q2_K_XL}"          # alternative: QUANT=UD-IQ3_XXS (11.7 GB, tighter fit)
-REPO="unsloth/Inkling-2-Mini-GGUF"
+QUANT="${QUANT:-GSQ-RCO-Q2_K_XL}"          # alternative: QUANT=<other GSQ-RCO quant>
+REPO="ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF"
 
 # Disk check (this Mac had only ~24 GB free; macOS also needs room for swap)
 free_gb=$(df -g . | awk 'NR==2{print $4}')
@@ -34,7 +34,7 @@ if [ -f "$OUT" ] && [ -z "${FORCE:-}" ]; then
     echo "Already downloaded: $OUT (size matches Hugging Face; skipping)"
   else
     # Downloads only ever land in $OUT after passing the checksum, so a full-named file is
-    # complete. A different size means Unsloth has re-uploaded the quant since then.
+    # complete. A different size means the repo has re-uploaded the quant since then.
     echo "Keeping existing $OUT: it's a complete, earlier upload ($(fsize "$OUT") bytes; Hugging Face now has $SIZE)."
     echo "  To replace it with the current upload: FORCE=1 QUANT=$QUANT ./scripts/download-model.sh"
   fi

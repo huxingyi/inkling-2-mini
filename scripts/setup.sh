@@ -3,8 +3,8 @@
 # Rebuilds everything this repo doesn't store: llama.cpp, the model and Pi.
 # Safe to re-run: each step checks first and skips what's already there.
 #
-#   ./scripts/setup.sh                      default model (UD-Q2_K_XL, ~9.1 GB)
-#   QUANT=UD-IQ3_XXS ./scripts/setup.sh     a different quant
+#   ./scripts/setup.sh                      default model (GSQ-RCO-Q2_K_XL, ~9.79 GB)
+#   QUANT=<other GSQ-RCO quant> ./scripts/setup.sh   a different quant
 # =============================================================================
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -47,7 +47,7 @@ fi
 xattr -dr com.apple.quarantine llama.cpp 2>/dev/null || true
 
 step "3. Model"
-QUANT="${QUANT:-UD-Q2_K_XL}" ./scripts/download-model.sh
+QUANT="${QUANT:-GSQ-RCO-Q2_K_XL}" ./scripts/download-model.sh
 ok "models/inkling.gguf -> $(readlink models/inkling.gguf)"
 
 step "4. Pi $PI_VERSION"

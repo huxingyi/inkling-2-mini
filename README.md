@@ -1,10 +1,10 @@
 # Inkling 2 Mini on a 16 GB MacBook
 
 Local setup for [Inkling 2 Mini](https://thinkingmachines.ai/news/inkling-2-mini/) on an Apple Silicon Mac
-with 16 GB of memory: a llama.cpp server, the 2-bit Unsloth GGUF, and the [Pi](https://pi.dev) coding agent
+with 16 GB of memory: a llama.cpp server, the 2-bit GSQ-RCO GGUF, and the [Pi](https://pi.dev) coding agent
 tuned for a small context window.
 
-This repo holds scripts and config only. The model (~9 GB), llama.cpp and Pi are downloaded again by
+This repo holds scripts and config only. The model (~9.8 GB), llama.cpp and Pi are downloaded again by
 `scripts/setup.sh`, each pinned to a version and checksum-verified.
 
 ## Recover from scratch
@@ -25,8 +25,8 @@ Needs: Apple Silicon Mac, ~25 GB free disk, Node.js 22.19+ (nvm is used if prese
 
 | Command | Effect |
 |---|---|
-| `CTX=24576 ./scripts/start-server.sh` | Larger context, but swaps and runs ~25% slower on 16 GB (see Context size) |
-| `QUANT=UD-IQ3_XXS ./scripts/start-server.sh` | Use (and download) another quant; Q2 stays the default |
+| `CTX=16384 ./scripts/start-server.sh` | Tighter context, faster and lighter on 16 GB (see Context size; default is 24576) |
+| `QUANT=<other quant> ./scripts/start-server.sh` | Use (and download) another quant in `ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF`; Q2 stays the default |
 | `WORKDIR=~/code/app ./scripts/pi.sh` | Run Pi on another folder |
 | `SANDBOX=1 ./scripts/pi.sh` | macOS sandbox: shell commands can't write outside the work folder |
 | `PI_MAX_TOOL_CHARS=4000 ./scripts/pi.sh` | Tighter cap on each tool result |
@@ -34,8 +34,8 @@ Needs: Apple Silicon Mac, ~25 GB free disk, Node.js 22.19+ (nvm is used if prese
 
 ## Context size
 
-16K (the default) is the largest size that runs well on a 16 GB M2. Measured with `scripts/bench-context.sh`
-(real server, context filled to 90% with this repo's files, then a real Pi task):
+The default is 24K (24576). Measured with `scripts/bench-context.sh`
+(real server, context filled to 90% with this repo's files, then a real Pi task) — against the Unsloth quant; re-run the bench after the GSQ-RCO switch:
 
 | Context | Swap read back | Generation during Pi turns | Pi task | Reading a full window |
 |---|---|---|---|---|
@@ -47,15 +47,15 @@ Needs: Apple Silicon Mac, ~25 GB free disk, Node.js 22.19+ (nvm is used if prese
 
 The model and its buffers take ~12 GB, so every extra GB of context pushes macOS into swap, which slows
 every turn, not just long ones. The model recalled a fact planted at the start of the window at every size
-that ran. Use `context-trim.ts` (below) to make 16K last, rather than a bigger window.
+that ran. Use `context-trim.ts` (below) to make the window last, rather than a bigger one.
 
 ## What's here
 
 | Path | Purpose |
 |---|---|
-| `scripts/setup.sh` | Rebuilds llama.cpp (Unsloth `b12722-mix-f1c70ea`), the model and Pi 1.6.0 |
+| `scripts/setup.sh` | Rebuilds llama.cpp (Unsloth `b12722-mix-f1c70ea`), the model and Pi 1.6.1 |
 | `scripts/start-server.sh` | `llama-server` on 127.0.0.1:8080, tuned for 16 GB |
-| `scripts/download-model.sh` | Downloads a GGUF from `unsloth/Inkling-2-Mini-GGUF`, verifies SHA-256 |
+| `scripts/download-model.sh` | Downloads a GGUF from `ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF`, verifies SHA-256 |
 | `scripts/verify.sh` | Smoke test |
 | `scripts/bench-context.sh` | Measures context sizes with the real server and Pi; results in `bench/` |
 | `scripts/pi.sh` | Launches Pi; syncs its context window and compaction to the server's `n_ctx` |

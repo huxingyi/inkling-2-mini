@@ -13,13 +13,13 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "bench"; OUT.mkdir(exist_ok=True)
 URL = "http://127.0.0.1:8080"
 # Each entry is CTX or CTX:UBATCH, e.g. "24576 32768:256".
-SIZES = [(int(x.split(":")[0]), x.split(":")[1] if ":" in x else None) for x in os.environ.get("CTXS", "16384 32768 49152 65536").split()]
+SIZES = [(int(x.split(":")[0]), x.split(":")[1] if ":" in x else None) for x in os.environ.get("CTXS", "24576 32768 49152 65536").split()]
 NEEDLE = "AMBER-FALCON-7731"
 PI_TASK = ("Answer three questions about this repo by reading only the files you need; do not change anything. "
            "1) Which llama.cpp TAG does scripts/setup.sh install? 2) What is the default context size (DEF_CTX) "
            "for the 2-bit model in scripts/start-server.sh? 3) Which environment variable makes scripts/pi.sh work "
            "in another folder? Reply with three short lines.")
-PI_EXPECT = ["b12722", "16384", "WORKDIR"]
+PI_EXPECT = ["b12722", "24576", "WORKDIR"]
 
 def log(msg):
     line = f"[{time.strftime('%H:%M:%S')}] {msg}"

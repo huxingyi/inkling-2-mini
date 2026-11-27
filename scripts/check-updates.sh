@@ -6,8 +6,8 @@ cd "$(dirname "$0")/.."
 
 TAG="$(sed -n 's/^TAG="\(.*\)"/\1/p' scripts/setup.sh)"
 PI_VERSION="$(sed -n 's/^PI_VERSION="\([^"]*\)".*/\1/p' scripts/setup.sh)"
-QUANT="${QUANT:-UD-Q2_K_XL}"
-REPO="unsloth/Inkling-2-Mini-GGUF"
+QUANT="${QUANT:-GSQ-RCO-Q2_K_XL}"
+REPO="ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF"
 PKG="@earendil-works/pi-coding-agent"
 PI_PREFIX="pi/node"
 

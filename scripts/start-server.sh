@@ -2,7 +2,7 @@
 # Starts llama-server tuned for a 16 GB M2. Leave this terminal open.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-QUANT="${QUANT:-}"     # e.g. QUANT=UD-IQ3_XXS ; empty = models/inkling.gguf (UD-Q2_K_XL)
+QUANT="${QUANT:-}"     # e.g. QUANT=<other GSQ-RCO quant> ; empty = models/inkling.gguf (GSQ-RCO-Q2_K_XL)
 if [ -n "$QUANT" ]; then
   MODEL=$(ls models/*"$QUANT"*.gguf 2>/dev/null | grep -v -e mmproj -e dspark | head -1 || true)
   if [ -z "$MODEL" ]; then
@@ -13,7 +13,7 @@ if [ -n "$QUANT" ]; then
 else
   MODEL=models/inkling.gguf
 fi
-case "$QUANT" in *Q3*) DEF_CTX=8192; DEF_WIRED=13312 ;; *) DEF_CTX=16384; DEF_WIRED=12288 ;; esac
+case "$QUANT" in *Q3*) DEF_CTX=8192; DEF_WIRED=13312 ;; *) DEF_CTX=24576; DEF_WIRED=12288 ;; esac
 CTX="${CTX:-$DEF_CTX}"
 WIRED_MB="${WIRED_MB:-$DEF_WIRED}"   # 3-bit needs ~13 GiB for Metal, leaving ~3 GiB for macOS
 UBATCH="${UBATCH:-512}"   # smaller (e.g. 128) shrinks llama.cpp's working memory so longer contexts fit; prompt reading gets a bit slower
