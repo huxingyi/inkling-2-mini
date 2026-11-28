@@ -31,7 +31,8 @@
             "max": null
           },
           "input": [
-            "text"
+            "text",
+            "image"
           ],
           "contextWindow": 24576,
           "maxTokens": 4096,
@@ -46,6 +47,18 @@
             "top_p": 1.0,
             "top_k": 0,
             "min_p": 0.0
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 1024,
+                "maxHeight": 1024,
+                "maxBytes": 800000,
+                "jpegQuality": 85
+              },
+              "maxPerMessage": 1,
+              "maxPerRequest": 2
+            }
           }
         }
       ]
