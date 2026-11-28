@@ -17,7 +17,22 @@ case "$QUANT" in *Q3*) DEF_CTX=8192; DEF_WIRED=13312 ;; *) DEF_CTX=24576; DEF_WI
 CTX="${CTX:-$DEF_CTX}"
 WIRED_MB="${WIRED_MB:-$DEF_WIRED}"   # 3-bit needs ~13 GiB for Metal, leaving ~3 GiB for macOS
 UBATCH="${UBATCH:-512}"   # smaller (e.g. 128) shrinks llama.cpp's working memory so longer contexts fit; prompt reading gets a bit slower
-echo "Model: $MODEL | context: $CTX | micro-batch: $UBATCH | GPU memory limit: $WIRED_MB MB"   # OpenCode's system prompt + tools need ~10k tokens; drop to 8192 for plain chat if memory is tight
+MMPROJ=""
+if [ "${VISION:-1}" != "0" ]; then
+  MMPROJ=models/mmproj-Inkling-2-Mini-BF16.gguf
+  if [ ! -f "$MMPROJ" ]; then
+    echo "Vision projector not downloaded; fetching it (checksum-verified)"
+    NO_LINK=1 VISION=1 ./scripts/download-model.sh
+    MMPROJ=$(ls models/*mmproj*.gguf | head -1)
+  fi
+fi
+if [ -n "$MMPROJ" ]; then
+  echo "Model: $MODEL | context: $CTX | micro-batch: $UBATCH | GPU memory limit: $WIRED_MB MB | vision: $MMPROJ (projector adds ~0.7 GB plus image tokens; consider CTX=8192 if memory is tight)"
+else
+  echo "Model: $MODEL | context: $CTX | micro-batch: $UBATCH | GPU memory limit: $WIRED_MB MB"  # OpenCode's system prompt + tools need ~10k tokens; drop to 8192 for plain chat if memory is tight
+fi
+_MMPROJ_ARGS=()
+[ -n "$MMPROJ" ] && _MMPROJ_ARGS=(--mmproj "$MMPROJ")
 
 # Let the GPU use ~12 GB of the 16 GB (default is ~10.7 GB). Resets on reboot.
 cur=$(sysctl -n iogpu.wired_limit_mb 2>/dev/null || echo 0)
@@ -36,4 +51,4 @@ exec ./llama.cpp/llama-server \
   --flash-attn on \
   --cache-type-k q8_0 --cache-type-v q8_0 \
   --temp 1.0 --top-p 1.0 --top-k 0 --min-p 0.0 \
-  --host 127.0.0.1 --port 8080
+  --host 127.0.0.1 --port 8080 ${_MMPROJ_ARGS[@]+"${_MMPROJ_ARGS[@]}"}

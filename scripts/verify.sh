@@ -28,3 +28,19 @@ m = json.load(sys.stdin)['choices'][0]['message']
 tc = m.get('tool_calls')
 print('PASS: tool call ->', json.dumps(tc[0]['function'])) if tc else print('FAIL: no tool call. Content:', (m.get('content') or '')[:300])
 "
+
+if [ "${VISION:-1}" != "0" ]; then
+  echo "== Vision test (requires the server started with the vision projector)"
+  curl -s "$URL/v1/chat/completions" -H 'Content-Type: application/json' -d '{
+    "model":"inkling-2-mini","max_tokens":256,
+    "messages":[{"role":"user","content":[
+      {"type":"text","text":"What is in this image? Answer in one sentence."},
+      {"type":"image_url","image_url":{"url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgAAIAAAUAAXpeqz8AAAAASUVORK5CYII="}}
+    ]}]
+  }' | /usr/bin/python3 -c "
+import sys, json
+r = json.load(sys.stdin)
+m = (r.get('choices') or [{}])[0].get('message', {})
+print(m.get('content') or r)
+"
+fi

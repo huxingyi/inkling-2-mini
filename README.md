@@ -27,6 +27,8 @@ Needs: Apple Silicon Mac, ~25 GB free disk, Node.js 22.19+ (nvm is used if prese
 |---|---|
 | `CTX=16384 ./scripts/start-server.sh` | Tighter context, faster and lighter on 16 GB (default is 24576) |
 | `QUANT=<other quant> ./scripts/start-server.sh` | Use (and download) another quant in `ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF`; Q2 stays the default |
+| `VISION=0 ./scripts/start-server.sh` | Text-only: disables the vision projector (default is `VISION=1`). Vision eats context tokens, so consider `CTX=8192` |
+| `VISION=0 ./scripts/verify.sh` | Skip the vision smoke test (default is enabled) |
 | `WORKDIR=~/code/app ./scripts/pi.sh` | Run Pi on another folder |
 | `SANDBOX=1 ./scripts/pi.sh` | macOS sandbox: shell commands can't write outside the work folder |
 | `PI_MAX_TOOL_CHARS=4000 ./scripts/pi.sh` | Tighter cap on each tool result |
@@ -38,7 +40,7 @@ Needs: Apple Silicon Mac, ~25 GB free disk, Node.js 22.19+ (nvm is used if prese
 |---|---|
 | `scripts/setup.sh` | Rebuilds llama.cpp (Unsloth build `b12776-mix-ef2df21`), the model and Pi 1.6.1 |
 | `scripts/start-server.sh` | `llama-server` on 127.0.0.1:8080, tuned for 16 GB |
-| `scripts/download-model.sh` | Downloads a GGUF from `ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF`, verifies SHA-256 |
+| `scripts/download-model.sh` | Downloads a GGUF from `ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF`, verifies SHA-256; `VISION=0` downloads only the LLM GGUF; default fetches the mmproj projector (`mmproj-Inkling-2-Mini-BF16.gguf`, ~640 MB) alongside it |
 | `scripts/verify.sh` | Smoke test |
 | `scripts/bench-context.sh` | Measures context sizes with the real server and Pi; results in `bench/` |
 | `scripts/pi.sh` | Launches Pi; syncs its context window and compaction to the server's `n_ctx` |

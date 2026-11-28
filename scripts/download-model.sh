@@ -1,14 +1,19 @@
 #!/bin/bash
-# Downloads ISTA-DASLab Inkling 2 Mini GGUF and verifies its SHA-256 against Hugging Face.
+# Downloads ISTA-DASLab Inkling 2 Mini GGUF (or the mmproj vision projector; default VISION=1, set VISION=0 for text-only) and verifies SHA-256 against Hugging Face.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-QUANT="${QUANT:-GSQ-RCO-Q2_K_XL}"          # alternative: QUANT=<other GSQ-RCO quant>
+if [ "${VISION:-1}" != "0" ]; then
+  # Vision projector (mmproj): the model GGUF has no vision weights; this is a ~640 MB add-on.
+  QUANT="mmproj"
+else
+  QUANT="${QUANT:-GSQ-RCO-Q2_K_XL}"          # alternative: QUANT=<other GSQ-RCO quant>
+fi
 REPO="ISTA-DASLab/Inkling-2-Mini-GSQ-RCO-GGUF"
 
 # Disk check (this Mac had only ~24 GB free; macOS also needs room for swap)
 free_gb=$(df -g . | awk 'NR==2{print $4}')
 echo "Free disk: ${free_gb} GB"
-need=$([[ "$QUANT" == *Q4* || "$QUANT" == *Q5* || "$QUANT" == *Q6* ]] && echo 25 || echo 15)
+need=$([[ "$QUANT" == "mmproj" ]] && echo 2 || { [[ "$QUANT" == *Q4* || "$QUANT" == *Q5* || "$QUANT" == *Q6* ]] && echo 25 || echo 15; })
 if [ "$free_gb" -lt "$need" ]; then echo "Need at least $need GB free for $QUANT. Clear space first."; exit 1; fi
 
 # Find the file for this quant in the repo (handles root or subfolder layouts)
@@ -18,7 +23,7 @@ import sys, json
 q = sys.argv[1]
 for f in json.load(sys.stdin):
     p = f.get('path', '')
-    if p.endswith('.gguf') and q in p and 'mmproj' not in p and 'dspark' not in p:
+    if p.endswith('.gguf') and 'dspark' not in p and (q == 'mmproj' and 'mmproj' in p or q != 'mmproj' and q in p and 'mmproj' not in p):
         print(p, f.get('lfs', {}).get('oid', ''), f.get('size', 0)); break
 " "$QUANT")
 [ -n "${FILE:-}" ] || { echo "Could not find $QUANT in $REPO"; exit 1; }
@@ -55,4 +60,4 @@ else
   echo "OK: $OUT matches Hugging Face checksum"
 fi
 # models/inkling.gguf is what the single-Mac start-server.sh loads; NO_LINK=1 leaves it alone
-[ -n "${NO_LINK:-}" ] || ln -sf "$(basename "$OUT")" models/inkling.gguf
+if [ -z "${NO_LINK:-}" ] && [ "$QUANT" != "mmproj" ]; then ln -sf "$(basename "$OUT")" models/inkling.gguf; fi
